@@ -1,0 +1,16 @@
+menu title Linux Installer
+
+label Top Menu
+        menu label ^Return to Top Menu
+        kernel modules/bios/menu.c32
+        append pxelinux.cfg/default
+
+label jessie_amd64
+        kernel img/debian/jessie/debian-installer/amd64/linux
+        append vga=normal initrd=img/debian/jessie/debian-installer/amd64/initrd.gz panic=10 
+
+label ttyS1
+        kernel img/debian/jessie/debian-installer/amd64/linux
+        append vga=normal initrd=img/debian/jessie/debian-installer/amd64/initrd.gz panic=10 console=tty0 console=ttyS1,19200n8
+
+

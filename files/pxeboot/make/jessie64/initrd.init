@@ -1,0 +1,26 @@
+#!/bin/ash
+
+echo "Mounting tmpfs on /sysroot"
+mount -t tmpfs tmpfs /sysroot
+
+for i in 0 1 2 3 ; do
+	/sbin/ip link set dev eth$i up
+done
+
+sleep 3
+
+for i in 0 1 2 3 ; do
+	/sbin/udhcpc -i eth$i -qn -s /etc/udhcpc.script
+done
+
+SERVER=`cat /etc/dhcp_server`
+/bin/wget -O - http://$SERVER:8088/jessie64/rootfs.tgz |tar zxf - -C /sysroot
+if [ "$VERSION" = "" ]; then
+	/bin/wget -O - http://$SERVER:8088/jessie64/modules.tgz |tar zxf - -C /sysroot
+else 
+	/bin/wget -O - http://$SERVER:8088/jessie64/modules.tgz.$VERSION |tar zxf - -C /sysroot
+fi
+
+exec /sbin/switch_root -c /dev/console /sysroot /sbin/init
+
+

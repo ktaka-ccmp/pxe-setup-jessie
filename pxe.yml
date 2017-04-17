@@ -1,0 +1,92 @@
+# Usage:
+#  ansible-playbook -i ./hosts ./pxe.yml -vv
+#
+
+- hosts: me
+  sudo: yes
+  sudo_user: root
+
+
+  vars:
+    packages: 
+      - isc-dhcp-server
+      - tftpd-hpa
+      - tftp-hpa
+      - nginx-light
+      - pxelinux
+      - unzip
+    directories:
+      - /pxeboot/tftpd/jessie64
+      - /pxeboot/nginx/jessie64
+      - /pxeboot/make/jessie64
+      - /pxeboot/tftpd/pxelinux.cfg
+      - /pxeboot/tftpd/img/debian/jessie
+      - /pxeboot/tftpd/img/jessie64
+    make_files:
+      - /pxeboot/make/jessie64/Makefile
+      - /pxeboot/make/jessie64/dot.config.kernel
+      - /pxeboot/make/jessie64/dot.config.busybox
+      - /pxeboot/make/jessie64/initrd.init
+    pxelinux_cfgs:
+      - /pxeboot/tftpd/pxelinux.cfg/default
+      - /pxeboot/tftpd/pxelinux.cfg/jessie_linux.menu
+      - /pxeboot/tftpd/pxelinux.cfg/linuxinstaller.menu
+
+  tasks:
+
+  - apt: update_cache=yes upgrade=yes
+
+  - apt: pkg={{ item }} state=present
+    with_items:
+      - "{{ packages }}"
+
+  - file: path={{ item }} state=directory mode=0755
+    with_items:
+      - "{{ directories }}"
+
+  - template: src=./files/etc/dhcp/dhcpd.conf dest=/etc/dhcp/dhcpd.conf mode=0744
+    notify: dhcpd-restart
+
+  - template: src=./files/etc/default/tftpd-hpa dest=/etc/default/tftpd-hpa mode=0744
+    notify: tftpd-restart
+
+  - template: src=./files/etc/nginx/sites-enabled/pxe dest=/etc/nginx/sites-enabled/pxe
+    notify: nginx-restart
+
+  - service: enabled=yes state=restarted name=isc-dhcp-server
+  - service: enabled=yes state=restarted name=tftpd-hpa
+  - service: enabled=yes state=restarted name=nginx
+
+  - file: src=/usr/lib/PXELINUX/pxelinux.0 dest=/pxeboot/tftpd/pxelinux.0 state=link
+  - file: src=/usr/lib/syslinux/modules/ dest=/pxeboot/tftpd/modules state=link
+
+  - unarchive:
+      src: http://ftp.debian.org/debian/dists/jessie/main/installer-amd64/current/images/netboot/netboot.tar.gz
+      dest: /pxeboot/tftpd/img/debian/jessie/
+      remote_src: True
+
+  - template: src=./files/{{ item }} dest={{ item }}
+    with_items:
+      - "{{ make_files }}"
+    tags:
+      - hello
+
+  - template: src=./files/{{ item }} dest={{ item }}
+    with_items:
+      - "{{ pxelinux_cfgs }}"
+    tags:
+      - hello
+
+  handlers:
+
+  - name: dhcpd-restart
+    service: state=restarted name=isc-dhcp-server
+
+  - name: tftpd-restart
+    service: state=restarted name=tftpd-hpa
+
+  - name: nginx-restart
+    service: state=restarted name=nginx
+
+
+# https://acme.com/software/thttpd/thttpd-2.27.tar.gz

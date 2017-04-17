@@ -1,0 +1,19 @@
+menu title Jessie Linux Diskless VGA
+
+timeout 100
+
+label Top Menu
+        menu label ^Return to Top Menu
+        kernel modules/bios/menu.c32
+        append pxelinux.cfg/default
+
+label vmlinuz-4.7.3-64net01 VGA
+        menu label vmlinuz-4.7.3-64net01 ^VGA
+        kernel img/jessie64/vmlinuz-4.7.3-64net01
+        append vga=normal initrd=img/jessie64/initrd root=/dev/rd0 rw panic=10 console=tty0 VERSION=4.7.3-64net01
+
+label vmlinuz-4.7.3-64net01 ttyS1
+        menu label vmlinuz-4.7.3-64net01 ttyS^1
+        kernel img/jessie64/vmlinuz-4.7.3-64net01
+        append vga=normal initrd=img/jessie64/initrd root=/dev/rd0 rw panic=10 console=tty0 console=ttyS1,19200n8 VERSION=4.7.3-64net01
+

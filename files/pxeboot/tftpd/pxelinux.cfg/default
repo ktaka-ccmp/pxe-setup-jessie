@@ -1,0 +1,20 @@
+serial 1 19200
+console 1
+
+menu title ttyS1 menu
+
+prompt 0
+timeout 50
+default modules/bios/menu.c32 
+
+label Linux Installer
+      menu label  Linux ^Installer
+      kernel modules/bios/menu.c32
+      append linuxinstaller.menu
+
+label Jessie Linux Diskless
+      menu default
+      menu label  ^Jessie Linux Diskless
+      kernel modules/bios/menu.c32
+      append jessie_linux.menu
+
