@@ -65,6 +65,7 @@ prep:
 	libattr1-dev \
 	libcap-dev \
 	flex bison \
+	screen \
 	debian-archive-keyring debian-keyring \
 
 .PHONY: initrd
