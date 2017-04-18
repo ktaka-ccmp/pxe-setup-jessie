@@ -65,7 +65,6 @@ prep:
 	libattr1-dev \
 	libcap-dev \
 	flex bison \
-	screen \
 	debian-archive-keyring debian-keyring \
 
 .PHONY: initrd
@@ -130,7 +129,7 @@ rootfs:
 	tcpdump,strace,libpam-systemd,ca-certificates,telnet,curl,ncurses-term,\
 	python,python2.7-dev,python-pip,tree,psmisc,\
 	bridge-utils,sudo,aptitude,ca-certificates,apt-transport-https,\
-	sudo,gcc,libffi-dev,libssl-dev,git \
+	sudo,gcc,libffi-dev,libssl-dev,git,screen \
 	jessie $@ http://ftp.jp.debian.org/debian
 	echo "root:root" | chpasswd --root ${CURDIR}/$@/ 
 	apt-get -o RootDir=${CURDIR}/$@/ clean 
