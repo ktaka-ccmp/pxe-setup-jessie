@@ -80,7 +80,11 @@ initrd-net: ${SRC_DIR}/${BUSYBOX}/_install initrd.init
 	mkdir -p $@/proc
 	mkdir -p $@/sys
 	mkdir -p $@/dev
+	mkdir -p $@/etc
 	cp initrd.init $@/init
+	cp udhcpc.script $@/etc/
+	chmod +x $@/etc/udhcpc.script
+	chmod +x $@/init
 
 ${SRC_DIR}/${BUSYBOX}/_install: dot.config.busybox
 	if [ ! -d ${SRC_DIR}/${BUSYBOX} ]; then \
@@ -90,7 +94,7 @@ ${SRC_DIR}/${BUSYBOX}/_install: dot.config.busybox
 	(cd ${SRC_DIR}/${BUSYBOX} ; \
 	make menuconfig ; \
 	time make -j 20 install )
-	egrep  "CONF|^$$" ${SRC_DIR}/${BUSYBOX}/.config > dot.config.busybox 
+	egrep  "^CONF" ${SRC_DIR}/${BUSYBOX}/.config > dot.config.busybox 
 	touch $@
 
 kernel: ${SRC_DIR}/${KERNEL}/.config installkernel
@@ -110,7 +114,7 @@ ${SRC_DIR}/${KERNEL}/.config: dot.config.kernel
 	(cd ${SRC_DIR}/${KERNEL}/; cp -v  .config .config.tmp ;\
 	sed -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=\"${KVER_MINOR}\"/g' .config.tmp > .config ;\
 	rm .config.tmp )
-	cp ${SRC_DIR}/${KERNEL}/.config dot.config.kernel
+	egrep  "^CONF" ${SRC_DIR}/${KERNEL}/.config > dot.config.kernel
 
 .PHONY: installkernel
 installkernel: ~/bin/installkernel

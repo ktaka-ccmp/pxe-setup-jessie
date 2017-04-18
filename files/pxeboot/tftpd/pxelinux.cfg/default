@@ -1,20 +1,39 @@
-serial 1 19200
+serial 2 115200
 console 1
 
-menu title ttyS1 menu
+menu title ttyS2 menu
 
 prompt 0
 timeout 50
-default modules/bios/menu.c32 
+default menu.c32 
 
 label Linux Installer
-      menu label  Linux ^Installer
-      kernel modules/bios/menu.c32
-      append linuxinstaller.menu
+	menu label  Linux ^Installer
+	kernel menu.c32
+	append linuxinstaller.menu
 
 label Jessie Linux Diskless
-      menu default
-      menu label  ^Jessie Linux Diskless
-      kernel modules/bios/menu.c32
-      append jessie_linux.menu
+	menu default
+	menu label  ^Jessie Linux Diskless
+	kernel menu.c32
+	append jessie_linux.menu
+
+label pwd
+      menu label ^Pwd
+      com32 pwd.c32
+
+label vmlinuz-4.7.3-64net01 ttyS0
+        menu label vmlinuz-4.7.3-64net01 ttyS^0
+        kernel img/jessie64/vmlinuz-4.7.3-64net01
+        append vga=normal initrd=img/jessie64/initrd root=/dev/rd0 rw panic=10 console=tty0 console=ttyS0,115200n8 VERSION=4.7.3-64net01
+
+label vmlinuz-4.7.3-64net01 ttyS1
+        menu label vmlinuz-4.7.3-64net01 ttyS^1
+        kernel img/jessie64/vmlinuz-4.7.3-64net01
+        append vga=normal initrd=img/jessie64/initrd root=/dev/rd0 rw panic=10 console=tty0 console=ttyS1,19200n8 VERSION=4.7.3-64net01
+
+label vmlinuz-4.7.3-64net01 ttyS2
+        menu label vmlinuz-4.7.3-64net01 ttyS^2
+        kernel img/jessie64/vmlinuz-4.7.3-64net01
+        append vga=normal initrd=img/jessie64/initrd root=/dev/rd0 rw panic=10 console=tty0 console=ttyS2,19200n8 VERSION=4.7.3-64net01
 

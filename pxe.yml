@@ -3,8 +3,8 @@
 #
 
 - hosts: me
-  sudo: yes
-  sudo_user: root
+  become: yes
+  become_user: root
 
 
   vars:
@@ -22,11 +22,13 @@
       - /pxeboot/tftpd/pxelinux.cfg
       - /pxeboot/tftpd/img/debian/jessie
       - /pxeboot/tftpd/img/jessie64
+      - /pxeboot/tftpd/modules
     make_files:
       - /pxeboot/make/jessie64/Makefile
       - /pxeboot/make/jessie64/dot.config.kernel
       - /pxeboot/make/jessie64/dot.config.busybox
       - /pxeboot/make/jessie64/initrd.init
+      - /pxeboot/make/jessie64/udhcpc.script
     pxelinux_cfgs:
       - /pxeboot/tftpd/pxelinux.cfg/default
       - /pxeboot/tftpd/pxelinux.cfg/jessie_linux.menu
@@ -57,8 +59,12 @@
   - service: enabled=yes state=restarted name=tftpd-hpa
   - service: enabled=yes state=restarted name=nginx
 
-  - file: src=/usr/lib/PXELINUX/pxelinux.0 dest=/pxeboot/tftpd/pxelinux.0 state=link
-  - file: src=/usr/lib/syslinux/modules/ dest=/pxeboot/tftpd/modules state=link
+  - copy: src=/usr/lib/PXELINUX/pxelinux.0 dest=/pxeboot/tftpd/pxelinux.0
+  - copy: src=/usr/lib/syslinux/modules/bios/{{ item }} dest=/pxeboot/tftpd/{{ item }}
+    with_items:
+      - ldlinux.c32
+      - libutil.c32
+      - menu.c32
 
   - unarchive:
       src: http://ftp.debian.org/debian/dists/jessie/main/installer-amd64/current/images/netboot/netboot.tar.gz
@@ -89,4 +95,3 @@
     service: state=restarted name=nginx
 
 
-# https://acme.com/software/thttpd/thttpd-2.27.tar.gz

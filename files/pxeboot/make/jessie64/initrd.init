@@ -1,5 +1,9 @@
 #!/bin/ash
 
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devtmpfs none /dev
+
 echo "Mounting tmpfs on /sysroot"
 mount -t tmpfs tmpfs /sysroot
 
@@ -20,6 +24,16 @@ if [ "$VERSION" = "" ]; then
 else 
 	/bin/wget -O - http://$SERVER:8088/jessie64/modules.tgz.$VERSION |tar zxf - -C /sysroot
 fi
+
+cat /etc/dhcp_lease |cut -f 4 -d "." > /sysroot/etc/hostname
+
+umount /dev
+umount /sys
+umount /proc
+
+mount -t proc proc /sysroot/proc
+mount -t sysfs sysfs /sysroot/sys
+mount -t devtmpfs none /sysroot/dev
 
 exec /sbin/switch_root -c /dev/console /sysroot /sbin/init
 
