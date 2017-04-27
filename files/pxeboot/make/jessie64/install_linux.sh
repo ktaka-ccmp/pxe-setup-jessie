@@ -72,18 +72,18 @@ insmod ext2
 menuentry "Debian Linux serial" {
         set root=(hd0,1)
         set gfxpayload=1280x1024x24,1280x1024
-        linux   /boot/vmlinuz-3.16.0-4-amd64 root=${dev}1 panic=10 console=tty0 console=ttyS0,115200n8
+        linux   /boot/vmlinuz-3.16.0-4-amd64 root=${dev}1 panic=10 console=tty0 console=ttyS0,115200n8 cgroup_enable=memory
         initrd  /boot/initrd.img-3.16.0-4-amd64
 }
 menuentry "Debian Linux" {
         set root=(hd0,1)
         set gfxpayload=1280x1024x24,1280x1024
-        linux   /boot/vmlinuz-3.16.0-4-amd64 root=${dev}1 panic=10
+        linux   /boot/vmlinuz-3.16.0-4-amd64 root=${dev}1 panic=10 cgroup_enable=memory
         initrd  /boot/initrd.img-3.16.0-4-amd64
 }
 menuentry "Debian Linux serial" {
         set root=(hd0,1)
-        linux   /boot/vmlinuz-3.16.0-4-amd64 root=${dev}1 panic=10 console=tty0 console=ttyS0,115200n8
+        linux   /boot/vmlinuz-3.16.0-4-amd64 root=${dev}1 panic=10 console=tty0 console=ttyS0,115200n8 cgroup_enable=memory
         initrd  /boot/initrd.img-3.16.0-4-amd64
 }
 EOF
