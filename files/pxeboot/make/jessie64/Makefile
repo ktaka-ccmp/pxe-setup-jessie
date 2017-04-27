@@ -50,6 +50,7 @@ prep:
 	mkdir -p boot	
 	mkdir -p initrd-net
 	aptitude install -y debootstrap \
+	cdebootstrap \
 	ca-certificates \
 	libncurses5-dev \
 	xz-utils \
@@ -125,21 +126,27 @@ installkernel: ~/bin/installkernel
 .PHONY: rootfs
 rootfs: 
 	mkdir -p $@ 
-	-debootstrap --include=openssh-server,openssh-client,rsync,pciutils,\
+	-cdebootstrap --include=openssh-server,openssh-client,rsync,pciutils,\
 	tcpdump,strace,libpam-systemd,ca-certificates,telnet,curl,ncurses-term,\
 	python,python2.7-dev,python-pip,tree,psmisc,\
 	bridge-utils,sudo,aptitude,ca-certificates,apt-transport-https,\
 	sudo,gcc,libffi-dev,libssl-dev,git,screen,\
 	linux-image-amd64,grub-pc \
 	jessie $@ http://ftp.jp.debian.org/debian
-	echo "root:root" | chpasswd --root ${CURDIR}/$@/ 
-	apt-get -o RootDir=${CURDIR}/$@/ clean 
-	cp $@/usr/share/zoneinfo/Japan $@/etc/localtime 
-	echo "Asia/Tokyo" > $@/etc/timezone 
+	make rootfs-modify
+
+.PHONY: rootfs.modify
+rootfs.modify: 
+	echo "root:root" | chpasswd --root ${CURDIR}/$(@:.modify=)/ 
+	apt-get -o RootDir=${CURDIR}/$(@:.modify=)/ clean 
+	cp $(@:.modify=)/usr/share/zoneinfo/Japan $(@:.modify=)/etc/localtime 
+	echo "Asia/Tokyo" > $(@:.modify=)/etc/timezone 
 	if [ -f ~/.ssh/authorized_keys ]; then \
-	mkdir -p $@/root/.ssh && chmod 700 $@/root/.ssh && cp ~/.ssh/authorized_keys $@/root/.ssh/ ;\
+	mkdir -p $(@:.modify=)/root/.ssh && chmod 700 $(@:.modify=)/root/.ssh && cp ~/.ssh/authorized_keys $(@:.modify=)/root/.ssh/ ;\
 	fi 
-	cp /etc/hosts $@/etc/ 
+	cp /etc/hosts $(@:.modify=)/etc/ 
+	cp install_linux.sh $(@:.modify=)/root/
+	chmod +x $(@:.modify=)/root/install_linux.sh
 	make rootfs.tgz
 
 .PHONY: rootfs.tgz

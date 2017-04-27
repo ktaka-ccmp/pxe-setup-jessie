@@ -29,6 +29,7 @@
       - /pxeboot/make/jessie64/dot.config.busybox
       - /pxeboot/make/jessie64/initrd.init
       - /pxeboot/make/jessie64/udhcpc.script
+      - /pxeboot/make/jessie64/install_linux.sh
     pxelinux_cfgs:
       - /pxeboot/tftpd/pxelinux.cfg/default
       - /pxeboot/tftpd/pxelinux.cfg/jessie_linux.menu
